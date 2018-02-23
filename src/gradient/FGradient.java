@@ -12,7 +12,7 @@ public class FGradient {
         LOG,
         ROOT
     };
-    model mdl = model.CIRCLE;
+    model mdl = model.ROOT;
     int root = 2;
     ArrayList<Nod> nods;
     Color inside;
@@ -70,7 +70,7 @@ public class FGradient {
             case LOG:
                 return Math.log1p(x*100)/Math.log1p(100);
             case ROOT:
-                return Math.pow(x, 1/root);
+                return Math.pow(x, 1.0/root);
             default:
                 return x;
         }
