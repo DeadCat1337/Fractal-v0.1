@@ -31,7 +31,7 @@ public class Window extends JFrame {
     private void initW() {
         setTitle("Fractal");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(600, 400);
+        setSize(900, 600);
         setLocationRelativeTo(null);
         setLayout(null);
         setResizable(false);
@@ -41,7 +41,7 @@ public class Window extends JFrame {
     private void initComp(){
         l = new Listener();
         
-        op = new OptionPanel(100, getContentPane().getHeight());
+        op = new OptionPanel(150, getContentPane().getHeight());
         op.setLocation(0, 0);
         add(op);
 
