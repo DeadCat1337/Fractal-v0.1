@@ -28,6 +28,18 @@ public class FGradient {
         nods.add(new Nod(1, Color.WHITE));
     }
     
+    public Color getNodColor(int i){
+        return nods.get(i).getColor();
+    }
+    
+    public double getNodPos(int i){
+        return nods.get(i).getPos();
+    }
+    
+    public int getSize(){
+        return nods.size();
+    }
+    
     public Color getColor(int i, int max) {
         
         if (i == -1)
@@ -77,8 +89,8 @@ public class FGradient {
     }
     
     class Nod{
-        double pos;
-        Color c;
+        private double pos;
+        private Color c;
         
         public Nod(double pos, Color c) {
             if(pos > 1)
