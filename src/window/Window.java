@@ -16,9 +16,9 @@ import javax.swing.event.DocumentListener;
 
 public class Window extends JFrame {
 
-    public FractalPanel fractal;
-    Listener l;
-    OptionPanel op;
+    private FractalPanel fractal;
+    private Listener l;
+    private OptionPanel op;
 
     public Window() {
         super();
@@ -150,14 +150,14 @@ public class Window extends JFrame {
 
     public class OptionPanel extends JPanel implements ActionListener {
 
-        MyButton b_show, b_ok, b_scP, b_scM, 
+        private MyButton b_show, b_ok, b_scP, b_scM, 
                 b_up, b_down, b_left, b_right, 
                 b_itrP, b_itrM, b_color;
-        JTextField t_scale, t_X, t_Y, t_iter;
-        JLabel l_loc, l_scale, l_X, l_Y, l_iter;
-        GradientWindow gw;
+        private JTextField t_scale, t_X, t_Y, t_iter;
+        private JLabel l_loc, l_scale, l_X, l_Y, l_iter;
+        private GradientWindow gw;
 
-        boolean on;
+        private boolean on;
 
         public OptionPanel(int X, int Y) {
             if (X < 100) {

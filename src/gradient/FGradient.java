@@ -12,18 +12,18 @@ public class FGradient {
         LOG,
         ROOT
     };
-    model mdl = model.ROOT;
-    int root = 2;
-    ArrayList<Nod> nods;
-    Color inside;
+    private model mdl = model.CIRCLE;
+    private int root = 2;
+    private ArrayList<Nod> nods;
+    private Color inside;
     
     public FGradient(){
         inside = Color.BLACK;
         nods = new ArrayList<>();
         nods.add(new Nod(0, Color.BLACK));
-        nods.add(new Nod(f(0.25), Color.RED));
-        nods.add(new Nod(f(0.5), Color.GREEN));
-        nods.add(new Nod(f(0.75), Color.BLUE));
+        //nods.add(new Nod(f(0.25), Color.RED));
+        //nods.add(new Nod(f(0.5), Color.GREEN));
+        //nods.add(new Nod(f(0.75), Color.BLUE));
         //nods.add(new Nod(0.5, Color.RED));
         nods.add(new Nod(1, Color.WHITE));
     }

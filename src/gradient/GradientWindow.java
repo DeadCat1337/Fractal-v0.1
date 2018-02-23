@@ -12,6 +12,9 @@ public class GradientWindow extends JFrame implements WindowListener{
     private FGradient fg;
     
     
+    
+    
+    
     public GradientWindow(FractalPanel fp){
         
         super();
