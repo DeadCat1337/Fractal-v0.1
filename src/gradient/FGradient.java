@@ -6,19 +6,18 @@ import java.util.ArrayList;
 
 public class FGradient {
     
+    enum model{
+        LINEAR,
+        CIRCLE,
+        LOG,
+        ROOT
+    };
+    model mdl = model.CIRCLE;
+    int root = 2;
     ArrayList<Nod> nods;
     Color inside;
     
     public FGradient(){
-        /*inside = new Color((int) (Math.random()*255), 
-                (int) (Math.random()*255), (int)(Math.random()*255));
-        start = new Color((int)(Math.random()*255), 
-                (int)(Math.random()*255), (int)(Math.random()*255));
-        end = new Color((int)(Math.random()*255), 
-                (int)(Math.random()*255), (int)(Math.random()*255));
-        System.out.println("in: "+ inside.toString()+";\nst: "+start.toString()+
-                ";\nend:"+end.toString());
-        */
         inside = Color.BLACK;
         nods = new ArrayList<>();
         nods.add(new Nod(0, Color.BLACK));
@@ -61,13 +60,20 @@ public class FGradient {
     
     double f(double x) {
         
-        //return Math.log1p(x*100)/Math.log1p(100);
-        
-        return Math.sqrt(1.0 - Math.pow(x-1, 2));
-        
-        //return Math.pow(x, 1/2);
-        
-        //return (Math.pow(Math.E, x)-1)/(Math.E-1);
+        if(null == mdl)
+            return x;
+        else switch (mdl) {
+            case LINEAR:
+                return x;
+            case CIRCLE:
+                return Math.sqrt(1.0 - Math.pow(x-1, 2));
+            case LOG:
+                return Math.log1p(x*100)/Math.log1p(100);
+            case ROOT:
+                return Math.pow(x, 1/root);
+            default:
+                return x;
+        }
     }
     
     class Nod{

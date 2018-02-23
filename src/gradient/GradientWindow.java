@@ -8,8 +8,9 @@ import my_components.FractalPanel;
 
 
 public class GradientWindow extends JFrame implements WindowListener{
-    FractalPanel fp;
-    FGradient fg;
+    private FractalPanel fp;
+    private FGradient fg;
+    
     
     public GradientWindow(FractalPanel fp){
         
@@ -19,19 +20,28 @@ public class GradientWindow extends JFrame implements WindowListener{
         addWindowListener(this);
     }
     
+    
+    
+    
+    
+    
+    
+    
     public void activate()
     {
         setTitle("Gradient Window");
         setSize(400, 300);
         setLocationRelativeTo(null);
         setResizable(false);
+        setExtendedState(JFrame.NORMAL);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLayout(null);
         setVisible(true);
         requestFocus();
         
         
-        fp.setGradient(new FGradient());
+        //fp.setGradient(new FGradient());
+        
         /*final double r = Math.random(), g = Math.random(), b = Math.random();
         fp.setGradient(new FGradient() {
             @Override
@@ -77,6 +87,6 @@ public class GradientWindow extends JFrame implements WindowListener{
 
     @Override
     public void windowDeactivated(WindowEvent we) {
-        fp.requestFocus();
+        //fp.requestFocus();
     }
 }
