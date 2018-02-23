@@ -1,15 +1,17 @@
 package gradient;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import javax.swing.JButton;
 
 public class ColorNod extends JButton {
-    final Color SIDE = Color.BLACK, MIDLE = Color.WHITE, 
+    final Color SIDE = Color.BLACK, MIDLE = Color.LIGHT_GRAY, 
             SIDE_ACTIVE = Color.DARK_GRAY, MIDLE_ACTIVE = Color.GRAY;
+    final int size = 17;
     
     double pos;
     Color c;
-    boolean sidde, active;
+    boolean side, active;
 
     public ColorNod(double pos, Color c) {
         super();
@@ -21,6 +23,36 @@ public class ColorNod extends JButton {
             this.pos = pos;
         }
         this.c = c;
+        
+        setOpaque(true);
+        setContentAreaFilled(false);
+        setSize(size, 3*size/2);
+    }
+    
+    @Override
+    public void paint(Graphics g){
+        if(side)
+            if(active)
+                g.setColor(SIDE_ACTIVE);
+            else
+                g.setColor(SIDE);
+        else
+            if(active)
+                g.setColor(MIDLE_ACTIVE);
+            else
+                g.setColor(MIDLE);
+        g.fillRect(0, size/2, size, size);
+        g.fillPolygon(new int[]{0, size/2, size}, 
+                new int[]{size/2, 0, size/2}, 3);
+        
+        g.setColor(c);
+        g.fillRect(2, size/2 + 2, size-4, size-4);
+        
+        if(side)
+            g.setColor(Color.WHITE);
+        else 
+            g.setColor(Color.BLACK);
+        g.drawRect(1, size/2 + 1, size-3, size-3);
     }
 
     public void setPos(double pos) {
@@ -37,6 +69,22 @@ public class ColorNod extends JButton {
 
     public Color getColor() {
         return c;
+    }
+
+    public void setSide(boolean side) {
+        this.side = side;
+    }
+
+    public boolean isSide() {
+        return side;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public boolean isActive() {
+        return active;
     }
     
     

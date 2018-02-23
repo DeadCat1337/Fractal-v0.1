@@ -1,16 +1,23 @@
 package gradient;
 
 import java.awt.Color;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.LinearGradientPaint;
+import java.awt.MultipleGradientPaint;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -46,10 +53,14 @@ public class GradientWindow extends JFrame implements WindowListener{
         this.fp = fp;
         cnd = new ArrayList<>();
         for(int i = 0; i < fp.getGradient().getSize(); i++){
-            cnd.add(new ColorNod(fp.getGradient().getNodPos(i), 
+            cnd.add(new ColorNod(
+                    (double)Math.round(fp.getGradient().getNodPos(i)*1000)/1000, 
                     fp.getGradient().getNodColor(i)));
             //System.out.println("" + i);
         }
+        cnd.get(active).setActive(true);
+        cnd.get(0).setSide(true);
+        cnd.get(cnd.size()-1).setSide(true);
         //activate();
         
         initW();
@@ -59,7 +70,6 @@ public class GradientWindow extends JFrame implements WindowListener{
         
         addWindowListener(this);
     }
-    
     
     private void initW() {
         setTitle("Gradient Window");
@@ -85,18 +95,18 @@ public class GradientWindow extends JFrame implements WindowListener{
         l_G = new JLabel("G:");
         l_B = new JLabel("B:");
         
-        t_pos = new JTextField("0");
-        t_R = new JTextField("" + cnd.get(0).getColor().getRed());
-        t_G = new JTextField("" + cnd.get(0).getColor().getGreen());
-        t_B = new JTextField("" + cnd.get(0).getColor().getBlue());
+        t_pos = new JTextField("" + cnd.get(active).getPos());
+        t_R = new JTextField("" + cnd.get(active).getColor().getRed());
+        t_G = new JTextField("" + cnd.get(active).getColor().getGreen());
+        t_B = new JTextField("" + cnd.get(active).getColor().getBlue());
         t_pos.addActionListener(l);
         t_R.addActionListener(l);
         t_G.addActionListener(l);
         t_B.addActionListener(l);
         
-        s_R = new ColorSlider(cnd.get(0).getColor().getRed());
-        s_G = new ColorSlider(cnd.get(0).getColor().getGreen());
-        s_B = new ColorSlider(cnd.get(0).getColor().getBlue());
+        s_R = new ColorSlider(cnd.get(active).getColor().getRed());
+        s_G = new ColorSlider(cnd.get(active).getColor().getGreen());
+        s_B = new ColorSlider(cnd.get(active).getColor().getBlue());
         s_R.addChangeListener(l);
         s_G.addChangeListener(l);
         s_B.addChangeListener(l);
@@ -119,9 +129,17 @@ public class GradientWindow extends JFrame implements WindowListener{
         
         g_l = new GradientLine();
         g_l.addMouseListener(l);
+        for(int i = 0; i < cnd.size(); i++){
+            cnd.get(i).addMouseMotionListener(l);
+            cnd.get(i).addActionListener(l);
+        }
     }
 
     private void initSizes(){
+        p_g.setSize(getContentPane().getWidth(), 80);
+        
+        g_l.setSize(p_g.getWidth() - 40, 30);
+        
         p_n.setSize(getContentPane().getWidth(), 0);
         
         b_c.setSize(50, 50);
@@ -149,7 +167,21 @@ public class GradientWindow extends JFrame implements WindowListener{
     }
     
     private void initPositions(){
-        p_n.setLocation(0, 40);
+        p_g.setLocation(0, 0);
+        add(p_g);
+        
+        g_l.setLocation(20, 10);
+        p_g.add(g_l);
+        
+        for(int i = 0; i < cnd.size(); i++){
+            cnd.get(i).setLocation((int)(g_l.getX() + 
+                    g_l.getWidth()*cnd.get(i).pos - cnd.get(i).getWidth()/2), 
+                    g_l.getHeight()+g_l.getY());
+            p_g.add(cnd.get(i));
+        }
+        
+        
+        p_n.setLocation(0, p_g.getHeight());
         add(p_n);
         
         b_c.setLocation(10, 10);
@@ -202,49 +234,57 @@ public class GradientWindow extends JFrame implements WindowListener{
     }
     
     public FGradient generateGradient(){
-        
-        return new FGradient();
-    }
+        /*Collections.sort(cnd, new Comparator<ColorNod>(){
+            @Override
+            public int compare(ColorNod cn1, ColorNod cn2){
+                if(cn1.getPos() > cn2.getPos())
+                    return 1;
+                else
+                    return -1;
+            }
+        });*/
+        FGradient fg = new FGradient();
+        fg.changeNod(cnd.get(0).getPos(), cnd.get(0).getColor(), 0);
+        fg.changeNod(cnd.get(cnd.size()-1).getPos(), 
+                cnd.get(cnd.size()-1).getColor(), 1);
+        for(int i = 1; i < cnd.size() - 1; i++){
+            fg.addNod(cnd.get(i).getPos(), cnd.get(i).getColor());
+        }
+        return fg;
+    };
     
-    public void activate()
-    {
+    public void activate(){
         setLocationRelativeTo(null);
         setExtendedState(JFrame.NORMAL);
         setVisible(true);
         requestFocus();
-        
-        
-        //fp.setGradient(new FGradient());
-        
-        /*final double r = Math.random(), g = Math.random(), b = Math.random();
-        fp.setGradient(new FGradient() {
-            @Override
-            public Color getColor(int i, int max) {
-                if (i == -1) {
-                    return new Color(255, 255, 255);
-                } else {
-                    return new Color((int) (r * 255 * (double) i / max), 
-                            (int) (g * 255 * (double) i / max), 
-                            (int) (b * 255 * (double) i / max));
-                }
-            }
-        });*/
-        //setVisible(false);
     }
     
-    public class GradientLine extends JButton{
-
-        public GradientLine() {
-            super();
-        }
-        
+    public void synch(){
+        Color c = cnd.get(active).getColor();
+        s_R.setValue(c.getRed());
+        s_G.setValue(c.getGreen());
+        s_B.setValue(c.getBlue());
+        t_R.setText("" + c.getRed());
+        t_G.setText("" + c.getGreen());
+        t_B.setText("" + c.getBlue());
+        t_pos.setText("" + cnd.get(active).getPos());
     }
-
+    
     public class Listener implements 
-            MouseListener, ActionListener, ChangeListener{
+            MouseListener, ActionListener, ChangeListener, MouseMotionListener{
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            for(int i = 0; i < cnd.size(); i++){
+                if(e.getSource() == cnd.get(i)){
+                    cnd.get(active).setActive(false);
+                    active = i;
+                    cnd.get(i).setActive(true);
+                    synch();
+                }
+            }
+            
             if(e.getSource() == t_R)
                 s_R.setValue(Integer.parseInt(t_R.getText()));
             if(e.getSource() == t_G)
@@ -253,8 +293,40 @@ public class GradientWindow extends JFrame implements WindowListener{
                 s_B.setValue(Integer.parseInt(t_B.getText()));
             cnd.get(active).setColor(new Color(
                     s_R.getValue(), s_G.getValue(), s_B.getValue()));
-            b_c.repaint();
             
+            b_c.repaint();
+            g_l.repaint();
+            cnd.get(active).repaint();
+            
+            if(e.getSource() == b_ok){
+                fp.setGradient(generateGradient());
+                fp.repaint();
+            }
+            
+            if(e.getSource() == b_ca) {
+                p_g.removeAll();
+                p_g.add(g_l);
+                cnd = new ArrayList<>();
+                for (int i = 0; i < fp.getGradient().getSize(); i++) {
+                    cnd.add(new ColorNod((double) Math.round(fp.getGradient().
+                            getNodPos(i) * 1000) / 1000,
+                            fp.getGradient().getNodColor(i)));
+                    cnd.get(i).addMouseMotionListener(l);
+                    cnd.get(i).addActionListener(l);
+                    cnd.get(i).setLocation((int) (g_l.getX()+ g_l.getWidth() * 
+                            cnd.get(i).pos - cnd.get(i).getWidth() / 2), 
+                            g_l.getHeight() + g_l.getY());
+                    p_g.add(cnd.get(i));
+                    cnd.get(i).repaint();
+                }
+                active = 0;
+                cnd.get(active).setActive(true);
+                cnd.get(0).setSide(true);
+                cnd.get(cnd.size() - 1).setSide(true);
+                synch();
+                b_c.repaint();
+                g_l.repaint();
+            }
         }
         
         @Override
@@ -268,6 +340,8 @@ public class GradientWindow extends JFrame implements WindowListener{
             cnd.get(active).setColor(new Color(
                     s_R.getValue(), s_G.getValue(), s_B.getValue()));
             b_c.repaint();
+            g_l.repaint();
+            cnd.get(active).repaint();
         }
         
         @Override
@@ -284,8 +358,42 @@ public class GradientWindow extends JFrame implements WindowListener{
 
         @Override
         public void mouseExited(MouseEvent me) {}
+
+        @Override
+        public void mouseDragged(MouseEvent me) {
+        }
+
+        @Override
+        public void mouseMoved(MouseEvent me) {
+        }
     }
 
+    public class GradientLine extends JButton{
+
+        public GradientLine() {
+            super();
+        }
+        
+        @Override
+        public void paint(Graphics g){
+            Graphics2D g2d = (Graphics2D) g;
+            float[] ps = new float[cnd.size()];
+            Color[] cs = new Color[cnd.size()];
+            for (int i = 0; i < cnd.size(); i++) {
+                ps[i] = (float) cnd.get(i).getPos();
+                cs[i] = cnd.get(i).getColor();
+            }
+            g2d.setPaint(new LinearGradientPaint(0, 0,
+                    g_l.getWidth(), 0, ps, cs,
+                    MultipleGradientPaint.CycleMethod.NO_CYCLE));
+            g2d.fillRect(0, 0, getWidth(), getHeight());
+            g.setColor(Color.BLACK);
+            g.drawRect(0, 0, getWidth()-1, getHeight()-1);
+        }
+        
+    }
+
+    
     @Override
     public void windowOpened(WindowEvent we) {
     }

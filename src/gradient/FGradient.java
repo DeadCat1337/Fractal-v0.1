@@ -2,6 +2,8 @@ package gradient;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 
 public class FGradient {
@@ -22,10 +24,39 @@ public class FGradient {
         nods = new ArrayList<>();
         nods.add(new Nod(0, Color.BLACK));
         //nods.add(new Nod(f(0.25), Color.RED));
-        //nods.add(new Nod(f(0.5), Color.GREEN));
+        //nods.add(new Nod(f(0.5), Color.RED));
         //nods.add(new Nod(f(0.75), Color.BLUE));
         //nods.add(new Nod(0.5, Color.RED));
         nods.add(new Nod(1, Color.WHITE));
+    }
+    
+    public void changeNod(double pos, Color c, int n){
+        if(n < 0 || n >= nods.size())
+            return;
+        nods.get(n).setColor(c);
+        nods.get(n).setPos(f(pos));
+        Collections.sort(nods, new Comparator<Nod>(){
+            @Override
+            public int compare(Nod n1, Nod n2){
+                if(n1.getPos() > n2.getPos())
+                    return 1;
+                else
+                    return -1;
+            }
+        });
+    }
+    
+    public void addNod(double pos, Color c){
+        nods.add(new Nod(f(pos), c));
+        Collections.sort(nods, new Comparator<Nod>(){
+            @Override
+            public int compare(Nod n1, Nod n2){
+                if(n1.getPos() > n2.getPos())
+                    return 1;
+                else
+                    return -1;
+            }
+        });
     }
     
     public Color getNodColor(int i){
@@ -33,7 +64,7 @@ public class FGradient {
     }
     
     public double getNodPos(int i){
-        return nods.get(i).getPos();
+        return reF(nods.get(i).getPos());
     }
     
     public int getSize(){
@@ -83,6 +114,23 @@ public class FGradient {
                 return Math.log1p(x*100)/Math.log1p(100);
             case ROOT:
                 return Math.pow(x, 1.0/root);
+            default:
+                return x;
+        }
+    }
+    
+    double reF(double x){
+        if(null == mdl)
+            return x;
+        else switch (mdl) {
+            case LINEAR:
+                return x;
+            case CIRCLE:
+                return -Math.sqrt(1.0 - Math.pow(x, 2)) + 1;
+            case LOG:
+                return (101.0*Math.pow(Math.E, x) - 1)/100;
+            case ROOT:
+                return Math.pow(x, root);
             default:
                 return x;
         }
