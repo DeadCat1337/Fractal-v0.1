@@ -255,8 +255,6 @@ public class GradientWindow extends JFrame implements WindowListener{
                     s_R.getValue(), s_G.getValue(), s_B.getValue()));
             b_c.repaint();
             
-            
-            
         }
         
         @Override
