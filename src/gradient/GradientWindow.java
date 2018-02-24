@@ -513,7 +513,6 @@ public class GradientWindow extends JFrame implements WindowListener {
                         ColorNod tmp = cnd.get(active);
                         Collections.sort(cnd, comp);
                         active = cnd.indexOf(tmp);
-                        active = cnd.indexOf(cnd.get(active));
                         g_l.repaint();
                     }
                 }
