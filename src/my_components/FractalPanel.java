@@ -20,6 +20,7 @@ public class FractalPanel extends JPanel{
         defaultFG.addNod(0, Color.BLACK);
         defaultFG.addNod(0.5, Color.RED);
         defaultFG.addNod(1.0, Color.WHITE);
+        defaultFG.addNod(0.75, Color.GREEN);
         defaultFG.setInsideColor(Color.BLACK);
         fg = defaultFG;
     }
