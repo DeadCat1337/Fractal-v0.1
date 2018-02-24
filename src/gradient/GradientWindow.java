@@ -335,7 +335,9 @@ public class GradientWindow extends JFrame implements WindowListener {
                 t_pos.setText("0.001");
             }
             cnd.get(active).setPos(Double.parseDouble(t_pos.getText()));
-            //Collections.sort(cnd, comp);
+            ColorNod tmp = cnd.get(active);
+            Collections.sort(cnd, comp);
+            active = cnd.indexOf(tmp);
             cnd.get(active).setLocation((int) (g_l.getX()
                     + g_l.getWidth() * cnd.get(active).pos - 
                     cnd.get(active).getWidth() / 2),
@@ -508,7 +510,10 @@ public class GradientWindow extends JFrame implements WindowListener {
                                 cnd.get(i).getWidth()/2)/g_l.getWidth());
                         t_pos.setText("" + (double)Math.
                                 round(cnd.get(i).getPos()*1000)/1000);
-                        //Collections.sort(cnd, comp);
+                        ColorNod tmp = cnd.get(active);
+                        Collections.sort(cnd, comp);
+                        active = cnd.indexOf(tmp);
+                        active = cnd.indexOf(cnd.get(active));
                         g_l.repaint();
                     }
                 }
