@@ -14,12 +14,13 @@ public class FGradient {
         LOG,
         ROOT
     };
-    private model mdl = model.CIRCLE;
+    private model mdl;
     private int root = 2;
     private ArrayList<Nod> nods;
     private Color inside;
     
     public FGradient(){
+        mdl = model.CIRCLE;
         inside = Color.BLACK;
         nods = new ArrayList<>();
         //nods.add(new Nod(0, Color.BLACK));
@@ -34,7 +35,7 @@ public class FGradient {
         if(n < 0 || n >= nods.size())
             return;
         nods.get(n).setColor(c);
-        nods.get(n).setPos(f(pos));
+        nods.get(n).setPos(pos);
         Collections.sort(nods, new Comparator<Nod>(){
             @Override
             public int compare(Nod n1, Nod n2){
@@ -53,7 +54,7 @@ public class FGradient {
                 return;
             }
         }
-        nods.add(new Nod(f(pos), c));
+        nods.add(new Nod(pos, c));
         Collections.sort(nods, new Comparator<Nod>(){
             @Override
             public int compare(Nod n1, Nod n2){
@@ -72,7 +73,7 @@ public class FGradient {
     }
     
     public double getNodPos(int i){
-        return reF(nods.get(i).getPos());
+        return nods.get(i).getPos();
     }
     
     public Color getInsideColor(){
@@ -103,10 +104,11 @@ public class FGradient {
     }
     
     Color getNodsColor(int n, double x){
-        //System.out.println(""+x);
+        /*x = (x - reF(nods.get(n).getPos()))/
+                (reF(nods.get(n+1).getPos()) - reF(nods.get(n).getPos()));
+        x = f(x);*/
         x = (x - nods.get(n).getPos())/
                 (nods.get(n+1).getPos() - nods.get(n).getPos());
-        //System.out.println(""+x);
         
         return new Color((int)((1-x)*nods.get(n).getColor().getRed() 
                 + x*nods.get(n+1).getColor().getRed()),
@@ -114,7 +116,6 @@ public class FGradient {
                 + x*nods.get(n+1).getColor().getGreen()),
                 (int)((1-x)*nods.get(n).getColor().getBlue()
                 + x*nods.get(n+1).getColor().getBlue()));
-        
     }
     
     double f(double x) {
