@@ -32,6 +32,8 @@ public class ColorNod extends JButton {
         setOpaque(true);
         setContentAreaFilled(false);
         setSize(size, 3*size/2);
+        if(getParent() != null)
+            setComponentZOrder(getParent(), 0);
     }
     
     @Override
@@ -53,11 +55,6 @@ public class ColorNod extends JButton {
         g.setColor(c);
         g.fillRect(2, size/2 + 2, size-4, size-4);
         
-        /*if(side)
-            g.setColor(Color.WHITE);
-        else 
-            g.setColor(Color.BLACK);
-        g.drawRect(1, size/2 + 1, size-3, size-3);*/
         if(active){
             if(side)
                 g.setColor(BORDER_SIDE_ACTIVE);
@@ -93,6 +90,8 @@ public class ColorNod extends JButton {
 
     public void setSide(boolean side) {
         this.side = side;
+        if(side && getParent() != null)
+            getParent().setComponentZOrder(this, 2);
     }
 
     public boolean isSide() {
@@ -101,6 +100,15 @@ public class ColorNod extends JButton {
 
     public void setActive(boolean active) {
         this.active = active;
+        if(getParent() != null){
+            if (active) {
+                getParent().setComponentZOrder(this, 0);
+            } else if (side) {
+                getParent().setComponentZOrder(this, 2);
+            } else {
+                getParent().setComponentZOrder(this, 1);
+            }
+        }
     }
 
     public boolean isActive() {

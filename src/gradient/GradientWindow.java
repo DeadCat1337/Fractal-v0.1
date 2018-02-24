@@ -46,6 +46,7 @@ public class GradientWindow extends JFrame implements WindowListener {
     private JPanel p_g, p_n, p_b;
 
     private Listener l;
+    private Comparator<ColorNod> comp;
 
     public GradientWindow(FractalPanel fp) {
 
@@ -62,8 +63,6 @@ public class GradientWindow extends JFrame implements WindowListener {
             cnd.get(active).setActive(true);
         cnd.get(0).setSide(true);
         cnd.get(cnd.size() - 1).setSide(true);
-        
-        //activate();
 
         initW();
         initComp();
@@ -82,6 +81,19 @@ public class GradientWindow extends JFrame implements WindowListener {
         setLayout(null);
         setVisible(true);
         l = new Listener();
+        comp = new Comparator<ColorNod>() {
+            @Override
+            public int compare(ColorNod t1, ColorNod t2) {
+                if (t1.getPos() > t2.getPos()) {
+                    return 1;
+                } else if (t1.getPos() < t2.getPos()) {
+                    return -1;
+                } else {
+                    t2.setPos(t2.getPos() + 0.000001);
+                    return -1;
+                }
+            }
+        };
     }
 
     private void initComp() {
@@ -101,7 +113,8 @@ public class GradientWindow extends JFrame implements WindowListener {
         b_i.addActionListener(l);
 
         if(active >= 0){
-            t_pos = new JTextField("-1");
+            t_pos = new JTextField("" + (double)Math.
+                    round(cnd.get(active).getPos()*1000)/1000);
             t_R = new JTextField("" + cnd.get(active).getColor().getRed());
             t_G = new JTextField("" + cnd.get(active).getColor().getGreen());
             t_B = new JTextField("" + cnd.get(active).getColor().getBlue());
@@ -155,6 +168,7 @@ public class GradientWindow extends JFrame implements WindowListener {
         g_l.addMouseListener(l);
         for (int i = 0; i < cnd.size(); i++) {
             cnd.get(i).addMouseMotionListener(l);
+            cnd.get(i).addMouseListener(l);
             cnd.get(i).addActionListener(l);
         }
     }
@@ -205,6 +219,7 @@ public class GradientWindow extends JFrame implements WindowListener {
                     cnd.get(i).getWidth() / 2),
                     g_l.getHeight() + g_l.getY());
             p_g.add(cnd.get(i));
+            p_g.setComponentZOrder(cnd.get(i), 2);
         }
 
         p_n.setLocation(0, p_g.getHeight());
@@ -299,7 +314,8 @@ public class GradientWindow extends JFrame implements WindowListener {
         t_G.setText("" + c.getGreen());
         t_B.setText("" + c.getBlue());
         if(active >= 0){
-            t_pos.setText("" + cnd.get(active).getPos());
+            t_pos.setText("" + (double)Math.
+                    round(cnd.get(active).getPos()*1000)/1000);
             if(cnd.get(active).isSide())
                 t_pos.setEnabled(false);
             else
@@ -309,13 +325,36 @@ public class GradientWindow extends JFrame implements WindowListener {
             t_pos.setEnabled(false);
         }
     }
+    
+    public void changePos(){
+        try {
+            if (Double.parseDouble(t_pos.getText()) >= 1) {
+                t_pos.setText("0.999");
+            }
+            if (Double.parseDouble(t_pos.getText()) <= 0) {
+                t_pos.setText("0.001");
+            }
+            cnd.get(active).setPos(Double.parseDouble(t_pos.getText()));
+            //Collections.sort(cnd, comp);
+            cnd.get(active).setLocation((int) (g_l.getX()
+                    + g_l.getWidth() * cnd.get(active).pos - 
+                    cnd.get(active).getWidth() / 2),
+                    cnd.get(active).getY());
+            g_l.repaint();
+        } catch (NumberFormatException | NullPointerException ne) {
+            System.out.println("Ты еблан");
+        }
+    }
 
     public class Listener implements
             MouseListener, ActionListener, ChangeListener, MouseMotionListener {
 
+        int nX;
+        
+        
         @Override
         public void actionPerformed(ActionEvent e) {
-            for (int i = 0; i < cnd.size(); i++) {
+            /*for (int i = 0; i < cnd.size(); i++) {
                 if (e.getSource() == cnd.get(i)) {
                     if(active >= 0)
                         cnd.get(active).setActive(false);
@@ -323,7 +362,7 @@ public class GradientWindow extends JFrame implements WindowListener {
                     cnd.get(i).setActive(true);
                     synch();
                 }
-            }
+            }*/
             
             if(e.getSource() == b_i){
                 if(active >= 0)
@@ -333,7 +372,6 @@ public class GradientWindow extends JFrame implements WindowListener {
             }
 
             try{
-                
                 if (e.getSource() == t_R) {
                     if(Integer.parseInt(t_R.getText()) > 255)
                         t_R.setText("255");
@@ -349,7 +387,10 @@ public class GradientWindow extends JFrame implements WindowListener {
                         t_B.setText("255");
                     s_B.setValue(Integer.parseInt(t_B.getText()));
                 }
-            }catch(NumberFormatException ne){
+                if (e.getSource() == t_pos) {
+                    changePos();
+                }
+            }catch(NumberFormatException|NullPointerException ne){
                 System.out.println("Ты еблан");
             }
             
@@ -391,6 +432,8 @@ public class GradientWindow extends JFrame implements WindowListener {
 
             if (e.getSource() == b_ca) {
                 p_g.removeAll();
+                p_g.add(g_l);
+                p_g.add(b_i);
                 for(int i = 0; i < cnd.size(); i++){
                     cnd.get(i).removeActionListener(l);
                     cnd.get(i).removeMouseMotionListener(l);
@@ -403,11 +446,13 @@ public class GradientWindow extends JFrame implements WindowListener {
                             fp.getGradient().getNodColor(i)));
                     
                     cnd.get(i).addMouseMotionListener(l);
+                    cnd.get(i).addMouseListener(l);
                     cnd.get(i).addActionListener(l);
                     cnd.get(i).setLocation((int) (g_l.getX()+ g_l.getWidth() * 
                             cnd.get(i).pos- cnd.get(i).getWidth() / 2), 
                             g_l.getHeight() + g_l.getY());
                     p_g.add(cnd.get(i));
+                    p_g.setComponentZOrder(cnd.get(i), 2);
                     //System.out.println("" + i);
                 }
                 if (active >= 0) {
@@ -417,8 +462,6 @@ public class GradientWindow extends JFrame implements WindowListener {
                 cnd.get(cnd.size() - 1).setSide(true);
                 b_i.setColor(fp.getGradient().getInsideColor());
                 synch();
-                p_g.add(g_l);
-                p_g.add(b_i);
                 
                 p_g.repaint();
             }
@@ -452,13 +495,24 @@ public class GradientWindow extends JFrame implements WindowListener {
 
         @Override
         public void mouseDragged(MouseEvent e) {
-            for(int i = 1; i < cnd.size() - 1; i++){
-                if(e.getSource() == cnd.get(i)){
-                    //cnd.get(i).setLocation(e.getX(), cnd.get(i).getY());
+            for (int i = 1; i < cnd.size() - 1; i++) {
+                if (e.getSource() == cnd.get(i)) {
+                    if (cnd.get(i).getX() + e.getPoint().x - nX > 
+                            g_l.getX() - cnd.get(i).getWidth()/2 && 
+                            cnd.get(i).getX() + e.getPoint().x - nX < 
+                            g_l.getX() + g_l.getWidth() - 
+                            cnd.get(i).getWidth()/2) {
+                        cnd.get(i).setLocation(cnd.get(i).getX() + 
+                                e.getPoint().x - nX, cnd.get(i).getY());
+                        cnd.get(i).setPos((0.0 + cnd.get(i).getX()-g_l.getX() + 
+                                cnd.get(i).getWidth()/2)/g_l.getWidth());
+                        t_pos.setText("" + (double)Math.
+                                round(cnd.get(i).getPos()*1000)/1000);
+                        //Collections.sort(cnd, comp);
+                        g_l.repaint();
+                    }
                 }
             }
-            
-            
         }
 
         @Override
@@ -470,7 +524,25 @@ public class GradientWindow extends JFrame implements WindowListener {
         }
 
         @Override
-        public void mousePressed(MouseEvent me) {
+        public void mousePressed(MouseEvent e) {
+            for (int i = 0; i < cnd.size(); i++) {
+                if (e.getSource() == cnd.get(i)) {
+                    if(active >= 0)
+                        cnd.get(active).setActive(false);
+                    active = i;
+                    cnd.get(i).setActive(true);
+                    synch();
+                }
+            }
+            
+            b_i.repaint();
+            b_c.repaint();
+            g_l.repaint();
+            for (int i = 0; i < cnd.size(); i++) {
+                cnd.get(i).repaint();
+            }
+            
+            nX=e.getX();
         }
 
         @Override
