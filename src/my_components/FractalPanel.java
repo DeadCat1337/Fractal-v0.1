@@ -13,9 +13,14 @@ public class FractalPanel extends JPanel{
     private double X=0.75,Y=-0,scale=200;    
     private int N=200;
     private FGradient fg; 
-    private final FGradient defaultFG = new FGradient();
+    private final FGradient defaultFG;
     
     public FractalPanel(){
+        defaultFG = new FGradient();
+        defaultFG.addNod(0, Color.BLACK);
+        defaultFG.addNod(0.5, Color.RED);
+        defaultFG.addNod(1.0, Color.WHITE);
+        defaultFG.setInsideColor(Color.BLACK);
         fg = defaultFG;
     }
     

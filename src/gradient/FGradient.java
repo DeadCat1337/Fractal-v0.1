@@ -22,12 +22,12 @@ public class FGradient {
     public FGradient(){
         inside = Color.BLACK;
         nods = new ArrayList<>();
-        nods.add(new Nod(0, Color.BLACK));
+        //nods.add(new Nod(0, Color.BLACK));
         //nods.add(new Nod(f(0.25), Color.RED));
         //nods.add(new Nod(f(0.5), Color.RED));
         //nods.add(new Nod(f(0.75), Color.BLUE));
         //nods.add(new Nod(0.5, Color.RED));
-        nods.add(new Nod(1, Color.WHITE));
+        //nods.add(new Nod(1, Color.WHITE));
     }
     
     public void changeNod(double pos, Color c, int n){
@@ -47,6 +47,12 @@ public class FGradient {
     }
     
     public void addNod(double pos, Color c){
+        for(int i = 0; i < nods.size(); i++){
+            if(nods.get(i).getPos() == pos){
+                nods.get(i).setColor(c);
+                return;
+            }
+        }
         nods.add(new Nod(f(pos), c));
         Collections.sort(nods, new Comparator<Nod>(){
             @Override
@@ -57,6 +63,8 @@ public class FGradient {
                     return -1;
             }
         });
+        
+        
     }
     
     public Color getNodColor(int i){
@@ -65,6 +73,14 @@ public class FGradient {
     
     public double getNodPos(int i){
         return reF(nods.get(i).getPos());
+    }
+    
+    public Color getInsideColor(){
+        return inside;
+    }
+    
+    public void setInsideColor(Color c){
+        inside = c;
     }
     
     public int getSize(){
