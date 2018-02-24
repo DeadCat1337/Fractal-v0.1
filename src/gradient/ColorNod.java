@@ -6,7 +6,12 @@ import javax.swing.JButton;
 
 public class ColorNod extends JButton {
     final Color SIDE = Color.BLACK, MIDLE = Color.LIGHT_GRAY, 
-            SIDE_ACTIVE = Color.DARK_GRAY, MIDLE_ACTIVE = Color.GRAY;
+            SIDE_ACTIVE = Color.DARK_GRAY, MIDLE_ACTIVE = Color.GRAY, 
+            BORDER_SIDE_ACTIVE = Color.WHITE, 
+            BORDER_SIDE_INACTIVE = Color.WHITE,
+            BORDER_MIDLE_ACTIVE = Color.BLACK, 
+            BORDER_MIDLE_INACTIVE = Color.BLACK;
+            
     final int size = 17;
     
     double pos;
@@ -48,11 +53,26 @@ public class ColorNod extends JButton {
         g.setColor(c);
         g.fillRect(2, size/2 + 2, size-4, size-4);
         
-        if(side)
+        /*if(side)
             g.setColor(Color.WHITE);
         else 
             g.setColor(Color.BLACK);
-        g.drawRect(1, size/2 + 1, size-3, size-3);
+        g.drawRect(1, size/2 + 1, size-3, size-3);*/
+        if(active){
+            if(side)
+                g.setColor(BORDER_SIDE_ACTIVE);
+            else
+                g.setColor(BORDER_MIDLE_ACTIVE);
+            g.drawRect(1, size/2 + 1, size-3, size-3);
+            g.fillPolygon(new int[]{size/4, size/2, size - size/4}, 
+                    new int[]{size/4 + 1, 1, size/4 + 1}, 3);
+        }else{
+            if(side)
+                g.setColor(BORDER_SIDE_INACTIVE);
+            else
+                g.setColor(BORDER_MIDLE_INACTIVE);
+            g.drawRect(1, size/2 + 1, size-3, size-3);
+        }
     }
 
     public void setPos(double pos) {

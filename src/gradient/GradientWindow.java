@@ -332,14 +332,25 @@ public class GradientWindow extends JFrame implements WindowListener {
                 synch();
             }
 
-            if (e.getSource() == t_R) {
-                s_R.setValue(Integer.parseInt(t_R.getText()));
-            }
-            if (e.getSource() == t_G) {
-                s_G.setValue(Integer.parseInt(t_G.getText()));
-            }
-            if (e.getSource() == t_B) {
-                s_B.setValue(Integer.parseInt(t_B.getText()));
+            try{
+                
+                if (e.getSource() == t_R) {
+                    if(Integer.parseInt(t_R.getText()) > 255)
+                        t_R.setText("255");
+                    s_R.setValue(Integer.parseInt(t_R.getText()));
+                }
+                if (e.getSource() == t_G) {
+                    if(Integer.parseInt(t_G.getText()) > 255)
+                        t_G.setText("255");
+                    s_G.setValue(Integer.parseInt(t_G.getText()));
+                }
+                if (e.getSource() == t_B) {
+                    if(Integer.parseInt(t_B.getText()) > 255)
+                        t_B.setText("255");
+                    s_B.setValue(Integer.parseInt(t_B.getText()));
+                }
+            }catch(NumberFormatException ne){
+                System.out.println("Ты еблан");
             }
             
             if(active >= 0)
@@ -358,6 +369,22 @@ public class GradientWindow extends JFrame implements WindowListener {
             
 
             if (e.getSource() == b_ok) {
+                try {
+                    if (Integer.parseInt(t_R.getText()) > 255) {
+                        t_R.setText("255");
+                    }
+                    s_R.setValue(Integer.parseInt(t_R.getText()));
+                    if (Integer.parseInt(t_G.getText()) > 255) {
+                        t_G.setText("255");
+                    }
+                    s_G.setValue(Integer.parseInt(t_G.getText()));
+                    if (Integer.parseInt(t_B.getText()) > 255) {
+                        t_B.setText("255");
+                    }
+                    s_B.setValue(Integer.parseInt(t_B.getText()));
+                } catch (NumberFormatException ne) {
+                    System.out.println("Ты еблан");
+                }
                 fp.setGradient(generateGradient());
                 fp.repaint();
             }
@@ -424,6 +451,21 @@ public class GradientWindow extends JFrame implements WindowListener {
         }
 
         @Override
+        public void mouseDragged(MouseEvent e) {
+            for(int i = 1; i < cnd.size() - 1; i++){
+                if(e.getSource() == cnd.get(i)){
+                    //cnd.get(i).setLocation(e.getX(), cnd.get(i).getY());
+                }
+            }
+            
+            
+        }
+
+        @Override
+        public void mouseMoved(MouseEvent me) {
+        }
+        
+        @Override
         public void mouseClicked(MouseEvent me) {
         }
 
@@ -441,14 +483,6 @@ public class GradientWindow extends JFrame implements WindowListener {
 
         @Override
         public void mouseExited(MouseEvent me) {
-        }
-
-        @Override
-        public void mouseDragged(MouseEvent me) {
-        }
-
-        @Override
-        public void mouseMoved(MouseEvent me) {
         }
     }
 
