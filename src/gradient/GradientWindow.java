@@ -28,7 +28,6 @@ import my_components.MyButton;
 import my_components.ColorSlider;
 
 public class GradientWindow extends JFrame implements WindowListener {
-
     private FractalPanel fp;
 
     private ArrayList<ColorNod> cnd;
@@ -55,7 +54,6 @@ public class GradientWindow extends JFrame implements WindowListener {
             cnd.add(new ColorNod(
                     (double) Math.round(fp.getGradient().getNodPos(i) * 1000) / 1000,
                     fp.getGradient().getNodColor(i)));
-            //System.out.println("" + i);
         }
         if(active >= 0)
             cnd.get(active).setActive(true);
@@ -348,10 +346,12 @@ public class GradientWindow extends JFrame implements WindowListener {
             fg.addNod(cnd.get(i).getPos(), cnd.get(i).getColor());
         }
         fg.setInsideColor(b_i.getColor());
+        fg.setModel(fp.getGradient().getModel());
+        fg.setRootPow(fp.getGradient().getRootPow());
         return fg;
     }
 
-    public class Listener implements
+    private class Listener implements
             MouseListener, ActionListener, ChangeListener, MouseMotionListener {
 
         int nX;
@@ -385,7 +385,7 @@ public class GradientWindow extends JFrame implements WindowListener {
                     changePos();
                 }
             }catch(NumberFormatException|NullPointerException ne){
-                System.out.println("Ты еблан");
+                //System.out.println("--");
             }
             
             if(active >= 0)
@@ -427,7 +427,7 @@ public class GradientWindow extends JFrame implements WindowListener {
                     }
                     s_B.setValue(Integer.parseInt(t_B.getText()));
                 } catch (NumberFormatException ne) {
-                    System.out.println("Ты еблан");
+                    //System.out.println("No letters, please!");
                 }
                 changePos();
                 fp.setGradient(generateGradient());
@@ -468,6 +468,10 @@ public class GradientWindow extends JFrame implements WindowListener {
                 synch();
                 
                 p_g.repaint();
+            }
+            
+            if(e.getSource() == b_cm){
+                new ModelSelectWindow(fp);
             }
         }
 
@@ -674,7 +678,6 @@ public class GradientWindow extends JFrame implements WindowListener {
         }
     }
 
-    
     @Override
     public void windowOpened(WindowEvent we) {
     }

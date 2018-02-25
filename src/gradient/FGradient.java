@@ -7,20 +7,14 @@ import java.util.Comparator;
 
 
 public class FGradient {
-    
-    enum model{
-        LINEAR,
-        CIRCLE,
-        LOG,
-        ROOT
-    };
-    private model mdl;
+    public static final int LINEAR = 1, CIRCLE = 2, LOG = 3, ROOT = 4;
+    private int mdl;
     private int root = 2;
     private ArrayList<Nod> nods;
     private Color inside;
     
     public FGradient(){
-        mdl = model.CIRCLE;
+        mdl = CIRCLE;
         inside = Color.BLACK;
         nods = new ArrayList<>();
         //nods.add(new Nod(0, Color.BLACK));
@@ -66,6 +60,28 @@ public class FGradient {
         });
         
         
+    }
+    
+    public int getModel(){
+        return mdl;
+    }
+    
+    public void setModel(int model){
+        if(model > 0 && model <= ROOT)
+            this.mdl = model;
+    }
+    
+    public int getRootPow(){
+        return root;
+    }
+    
+    public void setRootPow(int pow){
+        if(pow < 1)
+            root = 1;
+        else if(pow > 10)
+            root = 10;
+        else
+            root = pow;
     }
     
     public Color getNodColor(int i){
@@ -120,7 +136,7 @@ public class FGradient {
     
     double f(double x) {
         
-        if(null == mdl)
+        if(0 == mdl)
             return x;
         else switch (mdl) {
             case LINEAR:
@@ -137,7 +153,7 @@ public class FGradient {
     }
     
     double reF(double x){
-        if(null == mdl)
+        if(0 == mdl)
             return x;
         else switch (mdl) {
             case LINEAR:
@@ -148,6 +164,23 @@ public class FGradient {
                 return (101.0*Math.pow(Math.E, x) - 1)/100;
             case ROOT:
                 return Math.pow(x, root);
+            default:
+                return x;
+        }
+    }
+    
+    static double f(double x, int model, int root){
+        if(0 == model)
+            return x;
+        else switch (model) {
+            case LINEAR:
+                return x;
+            case CIRCLE:
+                return Math.sqrt(1.0 - Math.pow(x-1, 2));
+            case LOG:
+                return Math.log1p(x*100)/Math.log1p(100);
+            case ROOT:
+                return Math.pow(x, 1.0/root);
             default:
                 return x;
         }

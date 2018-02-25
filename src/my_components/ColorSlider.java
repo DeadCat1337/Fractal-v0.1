@@ -1,5 +1,6 @@
 package my_components;
 
+import java.awt.Color;
 import javax.swing.JSlider;
 
 public class ColorSlider extends JSlider{
@@ -11,6 +12,7 @@ public class ColorSlider extends JSlider{
         setValue(value);
         setMinorTickSpacing(32);
         setPaintTicks(true);
+        setForeground(Color.BLACK);
     }
     
 }

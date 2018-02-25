@@ -1,7 +1,6 @@
 package window;
 
 import gradient.GradientWindow;
-import java.awt.Insets;
 import my_components.FractalPanel;
 import my_components.MyButton;
 import java.awt.event.ActionEvent;
@@ -11,8 +10,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 public class Window extends JFrame {
 
@@ -454,6 +451,7 @@ public class Window extends JFrame {
 
     public static void main(String[] args) {
         new Window();
+        //new ModelSelectWindow(new FractalPanel());
     }
 
 }
