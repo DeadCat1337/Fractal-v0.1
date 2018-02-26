@@ -5,6 +5,8 @@ import my_components.FractalPanel;
 import my_components.MyButton;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -13,7 +15,7 @@ import javax.swing.*;
 
 public class Window extends JFrame {
 
-    private FractalPanel fractal;
+    private FractalPanel fp;
     private Listener l;
     private OptionPanel op;
 
@@ -34,32 +36,34 @@ public class Window extends JFrame {
         setResizable(false);
         setVisible(true);
     }
-    
-    private void initComp(){
+
+    private void initComp() {
         l = new Listener();
-        
+
         op = new OptionPanel(150, getContentPane().getHeight());
         op.setLocation(0, 0);
         add(op);
 
-        fractal = new FractalPanel();
-        fractal.setSize(getContentPane().getWidth() - op.getWidth(), 
+        fp = new FractalPanel();
+        fp.setSize(getContentPane().getWidth() - op.getWidth(),
                 getContentPane().getHeight());
-        fractal.setLocation(op.getWidth(), 1);
-        add(fractal);
+        fp.setLocation(op.getWidth(), 0);
+        add(fp);
 
         op.refresh();
 
         this.addKeyListener(l);
         op.addKeyListener(l);
-        fractal.addKeyListener(l);
-        fractal.addMouseListener(l);
+        fp.addKeyListener(l);
+        fp.addMouseListener(l);
+        addFocusListener(l);
     }
 
-    public class Listener implements KeyListener, MouseListener{
+    public class Listener implements KeyListener, MouseListener, FocusListener {
 
         @Override
-        public void keyTyped(KeyEvent e) {}
+        public void keyTyped(KeyEvent e) {
+        }
 
         @Override
         public void keyPressed(KeyEvent e) {
@@ -69,86 +73,102 @@ public class Window extends JFrame {
 
             if (i == 61 || i == 107)//plus
             {
-                fractal.zoomIn();
+                fp.zoomIn();
                 op.refresh();
-                fractal.repaint();
+                fp.repaint();
             }
             if (i == 45 || i == 109)//minus
             {
-                fractal.zoomOut();
+                fp.zoomOut();
                 op.refresh();
-                fractal.repaint();
+                fp.repaint();
             }
 
             if (i == 37 || i == 65)//left
             {
-                fractal.moveLeft();
+                fp.moveLeft();
                 op.refresh();
-                fractal.repaint();
+                fp.repaint();
             }
 
             if (i == 39 || i == 68)//right
             {
-                fractal.moveRight();
+                fp.moveRight();
                 op.refresh();
-                fractal.repaint();
+                fp.repaint();
             }
 
             if (i == 38 || i == 87)//up
             {
-                fractal.moveUp();
+                fp.moveUp();
                 op.refresh();
-                fractal.repaint();
+                fp.repaint();
             }
 
             if (i == 40 || i == 83)//down
             {
-                fractal.moveDown();
+                fp.moveDown();
                 op.refresh();
-                fractal.repaint();
+                fp.repaint();
             }
 
-            if (i == 46 || i == 69)//>
+            if (i == 46 || i == 69 || "ю".equalsIgnoreCase("" + e.getKeyChar()))//>
             {
-                fractal.incItr();
+                fp.incItr();
                 op.refresh();
-                fractal.repaint();
+                fp.repaint();
             }
 
-            if (i == 44 || i == 81)//<
+            if (i == 44 || i == 81 || "б".equalsIgnoreCase("" + e.getKeyChar()))//<
             {
-                fractal.decItr();
+                fp.decItr();
                 op.refresh();
-                fractal.repaint();
+                fp.repaint();
 
             }
         }
 
         @Override
-        public void keyReleased(KeyEvent e) {}
+        public void keyReleased(KeyEvent e) {
+        }
 
         @Override
         public void mouseClicked(MouseEvent me) {
-            fractal.requestFocus();
+            fp.requestFocus();
         }
 
         @Override
-        public void mousePressed(MouseEvent me) {}
+        public void mousePressed(MouseEvent me) {
+        }
 
         @Override
-        public void mouseReleased(MouseEvent me) {}
+        public void mouseReleased(MouseEvent me) {
+        }
 
         @Override
-        public void mouseEntered(MouseEvent me) {}
+        public void mouseEntered(MouseEvent me) {
+        }
 
         @Override
-        public void mouseExited(MouseEvent me) {}
+        public void mouseExited(MouseEvent me) {
+        }
+
+        @Override
+        public void focusGained(FocusEvent fe) {
+            if (fp != null) {
+                fp.requestFocus();
+            }
+        }
+
+        @Override
+        public void focusLost(FocusEvent fe) {
+        }
     }
 
     public class OptionPanel extends JPanel implements ActionListener {
 
-        private MyButton b_show, b_ok, b_scP, b_scM, 
-                b_up, b_down, b_left, b_right, 
+        private MyButton b_show, b_ok, b_scP, b_scM,
+                b_up, b_down, b_left, b_right,
                 b_itrP, b_itrM, b_color;
         private JTextField t_scale, t_X, t_Y, t_iter;
         private JLabel l_loc, l_scale, l_X, l_Y, l_iter;
@@ -220,10 +240,10 @@ public class Window extends JFrame {
 
             t_iter = new JTextField("200");
             t_iter.addActionListener(this);
-            
+
             b_ok = new MyButton("OK");
             b_ok.addActionListener(this);
-            
+
             b_color = new MyButton("Gradient");
             b_color.addActionListener(this);
         }
@@ -240,7 +260,7 @@ public class Window extends JFrame {
 
             b_scM.setSize(25, 25);
             b_scM.setLocation(0, 45);
-            add(b_scM);            
+            add(b_scM);
 
             b_scP.setSize(25, 25);
             b_scP.setLocation(X - 25, 45);
@@ -301,7 +321,7 @@ public class Window extends JFrame {
             t_iter.setSize(X - 50, 26);
             t_iter.setLocation(25, 190);
             add(t_iter);
-            
+
             b_color.setSize(X, 30);
             b_color.setLocation(0, 230);
             add(b_color);
@@ -312,10 +332,10 @@ public class Window extends JFrame {
         }
 
         public void refresh() {
-            t_scale.setText("" + fractal.getScale());
-            t_X.setText("" + fractal.getFX());
-            t_Y.setText("" + fractal.getFY());
-            t_iter.setText("" + fractal.getItr());
+            t_scale.setText("" + fp.getScale());
+            t_X.setText("" + fp.getFX());
+            t_Y.setText("" + fp.getFY());
+            t_iter.setText("" + fp.getItr());
         }
 
         @Override
@@ -327,8 +347,8 @@ public class Window extends JFrame {
                     b_show.setSize(20, getHeight());
                     b_show.setLocation(getWidth() - 20, 0);
                     b_show.setText("");
-                    fractal.setLocation(20, 0);
-                    fractal.setSize(fractal.getWidth() + getWidth() - 20, fractal.getHeight());
+                    fp.setLocation(20, 0);
+                    fp.setSize(fp.getWidth() + getWidth() - 20, fp.getHeight());
                     on = false;
                 } else {
                     setLocation(0, 0);
@@ -336,122 +356,122 @@ public class Window extends JFrame {
                     b_show.setSize(getWidth(), 20);
                     b_show.setLocation(0, 0);
                     b_show.setText("<<<");
-                    fractal.setLocation(getWidth(), 0);
-                    fractal.setSize(fractal.getWidth() - getWidth(), fractal.getHeight());
+                    fp.setLocation(getWidth(), 0);
+                    fp.setSize(fp.getWidth() - getWidth(), fp.getHeight());
                     on = true;
                 }
-                fractal.repaint();
-                fractal.requestFocus();
+                fp.repaint();
+                fp.requestFocus();
             }
-            
+
             if (e.getSource() == b_scP) {
-                fractal.zoomIn();
-                t_scale.setText("" + fractal.getScale());
-                fractal.requestFocus();
-                fractal.repaint();
+                fp.zoomIn();
+                t_scale.setText("" + fp.getScale());
+                fp.requestFocus();
+                fp.repaint();
             }
-            
+
             if (e.getSource() == b_scM) {
-                fractal.zoomOut();
-                t_scale.setText("" + fractal.getScale());
-                fractal.requestFocus();
-                fractal.repaint();
+                fp.zoomOut();
+                t_scale.setText("" + fp.getScale());
+                fp.requestFocus();
+                fp.repaint();
             }
 
             if (e.getSource() == b_left) {
-                fractal.moveLeft();
-                t_X.setText("" + fractal.getFX());
-                fractal.requestFocus();
-                fractal.repaint();
+                fp.moveLeft();
+                t_X.setText("" + fp.getFX());
+                fp.requestFocus();
+                fp.repaint();
             }
 
             if (e.getSource() == b_right) {
-                fractal.moveRight();
-                t_X.setText("" + fractal.getFX());
-                fractal.requestFocus();
-                fractal.repaint();
+                fp.moveRight();
+                t_X.setText("" + fp.getFX());
+                fp.requestFocus();
+                fp.repaint();
             }
 
             if (e.getSource() == b_up) {
-                fractal.moveUp();
-                t_Y.setText("" + fractal.getFY());
-                fractal.requestFocus();
-                fractal.repaint();
+                fp.moveUp();
+                t_Y.setText("" + fp.getFY());
+                fp.requestFocus();
+                fp.repaint();
             }
 
             if (e.getSource() == b_down) {
-                fractal.moveDown();
-                t_Y.setText("" + fractal.getFY());
-                fractal.requestFocus();
-                fractal.repaint();
+                fp.moveDown();
+                t_Y.setText("" + fp.getFY());
+                fp.requestFocus();
+                fp.repaint();
             }
 
             if (e.getSource() == b_itrP) {
-                fractal.incItr();
-                t_iter.setText("" + fractal.getItr());
-                fractal.requestFocus();
-                fractal.repaint();
+                fp.incItr();
+                t_iter.setText("" + fp.getItr());
+                fp.requestFocus();
+                fp.repaint();
             }
 
             if (e.getSource() == b_itrM) {
-                fractal.decItr();
-                t_iter.setText("" + fractal.getItr());
-                fractal.requestFocus();
-                fractal.repaint();
+                fp.decItr();
+                t_iter.setText("" + fp.getItr());
+                fp.requestFocus();
+                fp.repaint();
 
             }
-            
+
             if (e.getSource() == t_X) {
-                fractal.setFX(Double.parseDouble(t_X.getText()));
+                fp.setFX(Double.parseDouble(t_X.getText()));
                 //fractal.requestFocus();
-                fractal.repaint();
+                fp.repaint();
             }
-            
+
             if (e.getSource() == t_Y) {
-                fractal.setFY(Double.parseDouble(t_Y.getText()));
+                fp.setFY(Double.parseDouble(t_Y.getText()));
                 //fractal.requestFocus();
-                fractal.repaint();
+                fp.repaint();
             }
-            
+
             if (e.getSource() == t_scale) {
-                fractal.setScale(Double.parseDouble(t_scale.getText()));
+                fp.setScale(Double.parseDouble(t_scale.getText()));
                 //fractal.requestFocus();
-                fractal.repaint();
+                fp.repaint();
             }
-            
+
             if (e.getSource() == t_iter) {
-                fractal.setItr(Integer.parseInt(t_iter.getText()));
+                fp.setItr(Integer.parseInt(t_iter.getText()));
                 //fractal.requestFocus();
-                fractal.repaint();
+                fp.repaint();
             }
-            
+
             if (e.getSource() == b_color) {
-                fractal.setFX(Double.parseDouble(t_X.getText()));
-                fractal.setFY(Double.parseDouble(t_Y.getText()));
-                fractal.setScale(Double.parseDouble(t_scale.getText()));
-                fractal.setItr(Integer.parseInt(t_iter.getText()));
-                if(gw == null){
+                fp.setFX(Double.parseDouble(t_X.getText()));
+                fp.setFY(Double.parseDouble(t_Y.getText()));
+                fp.setScale(Double.parseDouble(t_scale.getText()));
+                fp.setItr(Integer.parseInt(t_iter.getText()));
+                /*if(gw == null){
                     gw = new GradientWindow(fractal);
                 } else {
                     gw.activate();
-                }
-                fractal.repaint();
+                }*/
+                new GradientWindow(fp);
+                fp.repaint();
             }
 
             if (e.getSource() == b_ok) {
-                fractal.setFX(Double.parseDouble(t_X.getText()));
-                fractal.setFY(Double.parseDouble(t_Y.getText()));
-                fractal.setScale(Double.parseDouble(t_scale.getText()));
-                fractal.setItr(Integer.parseInt(t_iter.getText()));
-                fractal.requestFocus();
-                fractal.repaint();
+                fp.setFX(Double.parseDouble(t_X.getText()));
+                fp.setFY(Double.parseDouble(t_Y.getText()));
+                fp.setScale(Double.parseDouble(t_scale.getText()));
+                fp.setItr(Integer.parseInt(t_iter.getText()));
+                fp.requestFocus();
+                fp.repaint();
             }
         }
     }
 
     public static void main(String[] args) {
         new Window();
-        //new ModelSelectWindow(new FractalPanel());
     }
 
 }

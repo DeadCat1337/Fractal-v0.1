@@ -14,5 +14,4 @@ public class ColorSlider extends JSlider{
         setPaintTicks(true);
         setForeground(Color.BLACK);
     }
-    
 }

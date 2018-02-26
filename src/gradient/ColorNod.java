@@ -114,6 +114,4 @@ public class ColorNod extends JButton {
     public boolean isActive() {
         return active;
     }
-    
-    
 }

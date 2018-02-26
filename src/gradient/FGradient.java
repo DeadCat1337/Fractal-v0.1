@@ -215,7 +215,5 @@ public class FGradient {
         public Color getColor() {
             return c;
         }
-        
     }
-    
 }

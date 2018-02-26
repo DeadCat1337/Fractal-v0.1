@@ -20,7 +20,7 @@ public class FractalPanel extends JPanel{
         defaultFG.addNod(0, Color.BLACK);
         defaultFG.addNod(0.5, Color.RED);
         defaultFG.addNod(1.0, Color.WHITE);
-        defaultFG.addNod(0.75, Color.GREEN);
+        defaultFG.addNod(0.75, Color.ORANGE);
         defaultFG.setInsideColor(Color.BLACK);
         fg = defaultFG;
     }
@@ -34,7 +34,6 @@ public class FractalPanel extends JPanel{
             a = a*a - b*b + X;
             b = 2 * j*b + Y;
             
-            //if(a>2||b>2)return i;
             if(a*a +b*b >4)return i;
         }
         
@@ -157,7 +156,4 @@ public class FractalPanel extends JPanel{
     {
         scale=sc;
     }
-    
-    
-    
 }

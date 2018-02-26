@@ -8,6 +8,8 @@ import java.awt.LinearGradientPaint;
 import java.awt.MultipleGradientPaint;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -27,7 +29,10 @@ import my_components.FractalPanel;
 import my_components.MyButton;
 import my_components.ColorSlider;
 
-public class GradientWindow extends JFrame implements WindowListener {
+public class GradientWindow extends JFrame implements WindowListener{
+    static boolean exist = false;
+    static GradientWindow act;
+    
     private FractalPanel fp;
 
     private ArrayList<ColorNod> cnd;
@@ -46,8 +51,23 @@ public class GradientWindow extends JFrame implements WindowListener {
     private Comparator<ColorNod> comp;
 
     public GradientWindow(FractalPanel fp) {
-
         super();
+        if (exist && act.getClass().equals(this.getClass())) {
+            act.setSize(act.getMinimumSize());
+            act.setLocationRelativeTo(null);
+            act.setState(NORMAL);
+            act.setVisible(true);
+            act.requestFocus();
+            dispose();
+        } else {
+            exist = true;
+            act = this;
+            addWindowListener(this);
+            activate(fp);
+        }
+    }
+
+    public void activate(FractalPanel fp) {
         this.fp = fp;
         cnd = new ArrayList<>();
         for (int i = 0; i < fp.getGradient().getSize(); i++) {
@@ -64,8 +84,6 @@ public class GradientWindow extends JFrame implements WindowListener {
         initComp();
         initSizes();
         initPositions();
-
-        addWindowListener(this);
     }
 
     private void initW() {
@@ -91,6 +109,7 @@ public class GradientWindow extends JFrame implements WindowListener {
                 }
             }
         };
+        addComponentListener(l);
     }
 
     private void initComp() {
@@ -278,13 +297,42 @@ public class GradientWindow extends JFrame implements WindowListener {
         p_b.add(b_del);
     }
 
-    public void activate() {
-        setLocationRelativeTo(null);
-        setExtendedState(JFrame.NORMAL);
-        setVisible(true);
-        requestFocus();
-    }
+    public void resize(){
+        p_g.setSize(getContentPane().getWidth(), p_g.getHeight());
+        p_n.setSize(getContentPane().getWidth(), p_n.getHeight());
+        p_b.setSize(getContentPane().getWidth(),
+                getContentPane().getHeight() - p_n.getHeight() - p_n.getY());
+        
+        g_l.setSize(p_g.getWidth() - b_i.getWidth() - 50, 30);
+        b_i.setLocation(g_l.getX() + g_l.getWidth() + 10, g_l.getY());
+        for (int i = 0; i < cnd.size(); i++) {
+            cnd.get(i).setLocation((int) (g_l.getX()
+                    + g_l.getWidth() * cnd.get(i).pos - 
+                    cnd.get(i).getWidth() / 2),
+                    g_l.getHeight() + g_l.getY());
+        }
+        /*t_R.setLocation(p_n.getWidth() - t_R.getWidth() - 10, 10);
+        t_G.setLocation(p_n.getWidth() - t_G.getWidth() - 10,
+                t_R.getHeight() + t_R.getY() + 10);
+        t_B.setLocation(p_n.getWidth() - t_B.getWidth() - 10,
+                t_G.getHeight() + t_G.getY() + 10);
 
+        s_R.setLocation(t_R.getX() - s_R.getWidth(), t_R.getY() - 5);
+        s_G.setLocation(t_G.getX() - s_G.getWidth(), t_G.getY() - 5);
+        s_B.setLocation(t_R.getX() - s_B.getWidth(), t_B.getY() - 5);
+
+        l_R.setLocation(s_R.getX() - l_R.getWidth() - 10, t_R.getY());
+        l_G.setLocation(s_G.getX() - l_G.getWidth() - 10, t_G.getY());
+        l_B.setLocation(s_B.getX() - l_B.getWidth() - 10, t_B.getY());*/
+        
+        
+        b_ok.setLocation(p_b.getWidth() - b_ok.getWidth() - 10,
+                p_b.getHeight() - b_ok.getHeight() - 10);
+        b_ca.setLocation(p_b.getWidth() - b_ca.getWidth() - 10,
+                b_ok.getY() - b_ca.getHeight() - 10);
+        b_cm.setLocation(10, p_b.getHeight() - b_cm.getHeight() - 10);
+        b_del.setLocation(b_cm.getX(), b_ca.getY());
+    }
     
     public void synch() {
         Color c;
@@ -335,7 +383,7 @@ public class GradientWindow extends JFrame implements WindowListener {
                         cnd.get(active).getY());
                 g_l.repaint();
             } catch (NumberFormatException | NullPointerException ne) {
-                System.out.println("Ты еблан");
+                //System.out.println("net");
             }
         }
     }
@@ -351,8 +399,9 @@ public class GradientWindow extends JFrame implements WindowListener {
         return fg;
     }
 
-    private class Listener implements
-            MouseListener, ActionListener, ChangeListener, MouseMotionListener {
+    private class Listener implements MouseListener, 
+            ActionListener, ChangeListener, 
+            MouseMotionListener, ComponentListener {
 
         int nX;
         
@@ -599,6 +648,23 @@ public class GradientWindow extends JFrame implements WindowListener {
         @Override
         public void mouseExited(MouseEvent me) {
         }
+
+        @Override
+        public void componentResized(ComponentEvent ce) {
+            resize();
+        }
+
+        @Override
+        public void componentMoved(ComponentEvent ce) {
+        }
+
+        @Override
+        public void componentShown(ComponentEvent ce) {
+        }
+
+        @Override
+        public void componentHidden(ComponentEvent ce) {
+        }
     }
 
     
@@ -641,7 +707,6 @@ public class GradientWindow extends JFrame implements WindowListener {
             g.setColor(Color.BLACK);
             g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
         }
-
     }
     
     public class IColorButton extends JButton{
@@ -677,15 +742,17 @@ public class GradientWindow extends JFrame implements WindowListener {
             g.drawRect(1, 1, getWidth() - 3, getHeight() - 3);
         }
     }
-
+    
+    
     @Override
     public void windowOpened(WindowEvent we) {
     }
 
     @Override
     public void windowClosing(WindowEvent we) {
-        fp.requestFocus();
-        setVisible(false);
+        exist = false;
+        act = null;
+        dispose();
     }
 
     @Override
@@ -694,7 +761,6 @@ public class GradientWindow extends JFrame implements WindowListener {
 
     @Override
     public void windowIconified(WindowEvent we) {
-        fp.requestFocus();
     }
 
     @Override
@@ -707,6 +773,5 @@ public class GradientWindow extends JFrame implements WindowListener {
 
     @Override
     public void windowDeactivated(WindowEvent we) {
-        //fp.requestFocus();
     }
 }

@@ -41,6 +41,4 @@ public class MyButton extends JButton implements MouseListener{
     public void mouseExited(MouseEvent me) {
         st = states.NORMAL;
     }
-    
-    
 }

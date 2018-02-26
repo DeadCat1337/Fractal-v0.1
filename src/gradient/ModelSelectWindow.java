@@ -19,7 +19,7 @@ import javax.swing.JTextField;
 import my_components.FractalPanel;
 import my_components.MyButton;
 
-public class ModelSelectWindow extends JFrame {
+public class ModelSelectWindow extends JFrame implements WindowListener {
 
     static boolean exist = false;
     static ModelSelectWindow active;
@@ -37,34 +37,41 @@ public class ModelSelectWindow extends JFrame {
 
     public ModelSelectWindow(FractalPanel fp) {
         super();
-        if (!exist) {
-            exist = true;
-            active = this;
-            this.fp = fp;
-            mdl = fp.getGradient().getModel();
-            root = fp.getGradient().getRootPow();
-            initW();
-            initComp();
-        } else {
+        if (exist && active.getClass().equals(this.getClass())) {
+            active.setSize(active.getMinimumSize());
             active.setLocationRelativeTo(null);
             active.setState(NORMAL);
             active.setVisible(true);
             active.requestFocus();
             dispose();
+        } else {
+            exist = true;
+            active = this;
+            addWindowListener(this);
+            activate(fp);
         }
     }
+
+    
+    public void activate(FractalPanel fp){
+        this.fp = fp;
+        mdl = fp.getGradient().getModel();
+        root = fp.getGradient().getRootPow();
+        initW();
+        initComp();
+    }
+    
 
     private void initW() {
         setTitle("Gradient Window");
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        setSize(300, 250);
-        setMinimumSize(new Dimension(250, 250));
+        //setSize(300, 250);
+        setMinimumSize(new Dimension(260, 210));
         //setResizable(false);
         setLocationRelativeTo(null);
         setLayout(null);
         setVisible(true);
         l = new Listener();
-        addWindowListener(l);
         addComponentListener(l);
     }
 
@@ -175,8 +182,7 @@ public class ModelSelectWindow extends JFrame {
         }
     }
     
-    private class Listener implements WindowListener, 
-            ActionListener, ComponentListener{
+    private class Listener implements ActionListener, ComponentListener{
 
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -228,6 +234,7 @@ public class ModelSelectWindow extends JFrame {
                 repaint();
             }
             if(e.getSource() == b_ok){
+                synchRoot();
                 fp.getGradient().setModel(mdl);
                 fp.getGradient().setRootPow(root);
                 fp.repaint();
@@ -258,37 +265,6 @@ public class ModelSelectWindow extends JFrame {
         }
 
         @Override
-        public void windowOpened(WindowEvent we) {
-        }
-
-        @Override
-        public void windowClosing(WindowEvent we) {
-            exist = false;
-            active = null;
-            dispose();
-        }
-
-        @Override
-        public void windowClosed(WindowEvent we) {
-        }
-
-        @Override
-        public void windowIconified(WindowEvent we) {
-        }
-
-        @Override
-        public void windowDeiconified(WindowEvent we) {
-        }
-
-        @Override
-        public void windowActivated(WindowEvent we) {
-        }
-
-        @Override
-        public void windowDeactivated(WindowEvent we) {
-        }
-
-        @Override
         public void componentResized(ComponentEvent e) {
             resize();
         }
@@ -306,4 +282,34 @@ public class ModelSelectWindow extends JFrame {
         }
     }
 
+    @Override
+    public void windowOpened(WindowEvent we) {
+    }
+
+    @Override
+    public void windowClosing(WindowEvent we) {
+        exist = false;
+        active = null;
+        dispose();
+    }
+
+    @Override
+    public void windowClosed(WindowEvent we) {
+    }
+
+    @Override
+    public void windowIconified(WindowEvent we) {
+    }
+
+    @Override
+    public void windowDeiconified(WindowEvent we) {
+    }
+
+    @Override
+    public void windowActivated(WindowEvent we) {
+    }
+
+    @Override
+    public void windowDeactivated(WindowEvent we) {
+    }
 }
