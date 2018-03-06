@@ -1,6 +1,7 @@
 package window;
 
 import gradient.GradientWindow;
+import image_saver.ImageSaver;
 import my_components.FractalPanel;
 import my_components.MyButton;
 import java.awt.event.ActionEvent;
@@ -169,7 +170,7 @@ public class Window extends JFrame {
 
         private MyButton b_show, b_ok, b_scP, b_scM,
                 b_up, b_down, b_left, b_right,
-                b_itrP, b_itrM, b_color;
+                b_itrP, b_itrM, b_color, b_image;
         private JTextField t_scale, t_X, t_Y, t_iter;
         private JLabel l_loc, l_scale, l_X, l_Y, l_iter;
         private GradientWindow gw;
@@ -246,6 +247,9 @@ public class Window extends JFrame {
 
             b_color = new MyButton("Gradient");
             b_color.addActionListener(this);
+            
+            b_image = new MyButton("Save Image");
+            b_image.addActionListener(this);
         }
 
         private void initPositions(int X, int Y) {
@@ -325,6 +329,10 @@ public class Window extends JFrame {
             b_color.setSize(X, 30);
             b_color.setLocation(0, 230);
             add(b_color);
+            
+            b_image.setSize(X, 30);
+            b_image.setLocation(0, 280);
+            add(b_image);
 
             b_ok.setSize(X, 30);
             b_ok.setLocation(0, Y - 30);
@@ -450,14 +458,14 @@ public class Window extends JFrame {
                 fp.setFY(Double.parseDouble(t_Y.getText()));
                 fp.setScale(Double.parseDouble(t_scale.getText()));
                 fp.setItr(Integer.parseInt(t_iter.getText()));
-                /*if(gw == null){
-                    gw = new GradientWindow(fractal);
-                } else {
-                    gw.activate();
-                }*/
                 new GradientWindow(fp);
                 fp.repaint();
             }
+            
+            if (e.getSource() == b_image) {
+                new ImageSaver(fp);
+            }
+
 
             if (e.getSource() == b_ok) {
                 fp.setFX(Double.parseDouble(t_X.getText()));
