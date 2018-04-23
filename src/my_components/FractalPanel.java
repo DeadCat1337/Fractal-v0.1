@@ -3,6 +3,7 @@ package my_components;
 import gradient.FGradient;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import javax.swing.*;
 
 public class FractalPanel extends JPanel{
@@ -14,6 +15,7 @@ public class FractalPanel extends JPanel{
     private int N=200;
     private FGradient fg; 
     private final FGradient defaultFG;
+    BufferedImage bi;
     
     public FractalPanel(){
         defaultFG = new FGradient();
@@ -23,6 +25,8 @@ public class FractalPanel extends JPanel{
         defaultFG.addNod(0.75, Color.ORANGE);
         defaultFG.setInsideColor(Color.BLACK);
         fg = defaultFG;
+        
+        bi = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
     }
     
     public int isIn(double X, double Y) {
@@ -40,17 +44,21 @@ public class FractalPanel extends JPanel{
         return -1;
     }
     
+    public void reCalculate(){
+        
+    }
+    
     @Override
     public void paint(Graphics g)
     {
         
         int w=getWidth(),h=getHeight();
-        int i;
+        /*int i;
         for(int x=0;x<w;x++)
         {
             for(int y=0;y<h;y++)
             {
-                i = isIn(x / scale - X -w/2/scale, y / scale - Y -h/2/scale);
+                //i = isIn(x / scale - X -w/2/scale, y / scale - Y -h/2/scale);
                 
                 //if(i==-1)g.setColor(new Color(0,0,0));
                 //else g.setColor(new Color(255,255,255));
@@ -58,11 +66,12 @@ public class FractalPanel extends JPanel{
                 //if (i == -1)g.setColor(new Color(255,255,255));
 		//else color ? glColor3d((double)(n*itr - i) / (n*itr), 0.5, (double)i / (n*itr)) : glColor3d(1, 1, 1);
                 //else g.setColor(new Color((int)(255*(double)i / N), (int)(255*(double)i / N), (int)(255*(double)0.5*i / N)));
-                g.setColor(fg.getColor(i, N-1));
-                
+                //g.setColor(fg.getColor(i, N-1));
+                g.setColor(matrix[x][y]);
                 g.drawRect(x, y, 1, 1);
             }
-        }
+        }*/
+        g.drawImage(bi, 0, 0, this);
         
         g.setColor(Color.WHITE);
         g.fillRect(w/2-1, h/2-1, 3, 3);
@@ -73,6 +82,12 @@ public class FractalPanel extends JPanel{
         g.fillRect(w/2-1, h/2, 1, 1);
         g.fillRect(w/2, h/2+1, 1, 1);
         g.fillRect(w/2, h/2-1, 1, 1);
+    }
+    
+    @Override
+    public void repaint(){
+        super.repaint();
+        reCalculate();
     }
     
     public FGradient getGradient(){
@@ -117,43 +132,35 @@ public class FractalPanel extends JPanel{
         setScale(getScale()/changeScale);
     }
     
-    public int getItr()
-    {
+    public int getItr() {
         return N;
     }
     
-    public void setItr(int n)
-    {
+    public void setItr(int n) {
         N=n;
     }
     
-    public double getFX()
-    {
+    public double getFX() {
         return X;
     }
     
-    public void setFX(double x)
-    {
+    public void setFX(double x) {
         X=x;
     }
     
-    public double getFY()
-    {
+    public double getFY() {
         return Y;
     }
     
-    public void setFY(double y)
-    {
+    public void setFY(double y) {
         Y=y;
     }
     
-    public double getScale()
-    {
+    public double getScale() {
         return scale;
     }
     
-    public void setScale(double sc)
-    {
+    public void setScale(double sc) {
         scale=sc;
     }
 }
