@@ -24,9 +24,6 @@ public class ImageSaver implements Runnable{
             f.createNewFile();
             Thread t = new Thread(this);
             t.start();
-            while(!ready){
-                System.err.print("J");
-            }
             System.out.println("image_saver.ImageSaver.<init>()");
             ImageIO.write(bi, "png", f);
         } catch(IOException ex) {

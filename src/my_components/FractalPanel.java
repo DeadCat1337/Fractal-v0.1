@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import javax.swing.*;
+import parallel.ThreadManager;
 
 public class FractalPanel extends JPanel{
     
@@ -16,17 +17,19 @@ public class FractalPanel extends JPanel{
     private FGradient fg; 
     private final FGradient defaultFG;
     BufferedImage bi;
+    ThreadManager tm;
     
     public FractalPanel(){
+        super();
+        bi = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
+        tm = new ThreadManager(this);
         defaultFG = new FGradient();
-        defaultFG.addNod(0, Color.BLACK);
+        defaultFG.addNod(0, Color.GREEN);
         defaultFG.addNod(0.5, Color.RED);
         defaultFG.addNod(1.0, Color.WHITE);
         defaultFG.addNod(0.75, Color.ORANGE);
-        defaultFG.setInsideColor(Color.BLACK);
+        defaultFG.setInsideColor(Color.BLUE);
         fg = defaultFG;
-        
-        bi = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
     }
     
     public int isIn(double X, double Y) {
@@ -45,6 +48,11 @@ public class FractalPanel extends JPanel{
     }
     
     public void reCalculate(){
+        if(tm != null){
+            tm.reCalculate();
+        } else {
+            System.err.println("lol");
+        }
         
     }
     
@@ -87,7 +95,11 @@ public class FractalPanel extends JPanel{
     @Override
     public void repaint(){
         super.repaint();
-        reCalculate();
+        //reCalculate();
+    }
+    
+    public BufferedImage getMatrix(){
+        return bi;
     }
     
     public FGradient getGradient(){
@@ -96,6 +108,7 @@ public class FractalPanel extends JPanel{
     
     public void setGradient(FGradient fgr){
         fg = fgr;
+        reCalculate();
     }
     
     public void moveRight(){
@@ -122,6 +135,7 @@ public class FractalPanel extends JPanel{
         if (getItr() > changeItr) {
                     setItr(getItr() - changeItr);
                 }
+        reCalculate();
     }
     
     public void zoomIn(){
@@ -138,6 +152,7 @@ public class FractalPanel extends JPanel{
     
     public void setItr(int n) {
         N=n;
+        reCalculate();
     }
     
     public double getFX() {
@@ -146,6 +161,7 @@ public class FractalPanel extends JPanel{
     
     public void setFX(double x) {
         X=x;
+        reCalculate();
     }
     
     public double getFY() {
@@ -154,6 +170,7 @@ public class FractalPanel extends JPanel{
     
     public void setFY(double y) {
         Y=y;
+        reCalculate();
     }
     
     public double getScale() {
@@ -162,5 +179,6 @@ public class FractalPanel extends JPanel{
     
     public void setScale(double sc) {
         scale=sc;
+        reCalculate();
     }
 }
