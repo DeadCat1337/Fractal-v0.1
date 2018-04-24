@@ -102,6 +102,10 @@ public class FractalPanel extends JPanel{
         return bi;
     }
     
+    public void setMatrix(BufferedImage bi){
+        this.bi = bi;
+    }
+    
     public FGradient getGradient(){
         return fg;
     }
