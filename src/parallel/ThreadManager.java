@@ -1,134 +1,138 @@
 package parallel;
 
 import gradient.FGradient;
-import java.awt.Color;
+import java.awt.List;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import my_components.FractalPanel;
 
-public class ThreadManager implements Runnable {
+public class ThreadManager {
 
-    public static final int TH_MAX = 1000;
+    public static final int TH_MAX = 2000;
 
-    private int th = 10;
-    private FractalThread threads[];
-    private Thread mainTh;
+    private int th = 1000;
 
     private FractalPanel fp;
     private FGradient fg;
-    private boolean working, started = false;
+    ExecutorService es, mn;
 
     public ThreadManager(FractalPanel fp) {
         this.fp = fp;
-
-        threads = new FractalThread[TH_MAX];
-        for (int i = 0; i < TH_MAX; i++) {
-            threads[i] = new FractalThread();
+        if (th > TH_MAX) {
+            th = TH_MAX;
         }
-        mainTh = new Thread(this){
-            boolean st = false;
-            @Override
-            public void start(){
-                if(!st){
-                    super.start();
-                    st = true;
-                }
-            }
-        };
+        mn = Executors.newFixedThreadPool(1);
     }
 
     public void reCalculate() {
-        working = true;
-        mainTh.start();
+        try {
+            mn.shutdown();
+            mn.awaitTermination(1, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(ThreadManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        mn = Executors.newFixedThreadPool(1);
+        /*Future<BufferedImage> f = mn.submit(new Callable<BufferedImage>() {
+        @Override
+        public BufferedImage call() throws Exception {
+        return create();
+        }
+        });
+        try {
+        fp.setMatrix((BufferedImage) f.get());
+        } catch (InterruptedException | ExecutionException ex) {
+        Logger.getLogger(ThreadManager.class.getName()).log(Level.SEVERE, null, ex);
+        }*/
+        mn.submit(new Runnable() {
+            @Override
+            public void run() {
+                create();
+            }
+        });
+        System.out.println("LOL1");
     }
 
-    @Override
-    public void run() {
-        while (true) {
-            if(working){
-                int w = fp.getWidth(); 
-                int h = fp.getHeight();
-                double X = fp.getFX();
-                double Y = fp.getFY();
-                double scale = fp.getScale();
-                int N = fp.getItr();
-                fg = fp.getGradient();
-                BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-                int i = 0;
-                for (i = 0; i < th; i++) {
-                    threads[i].calculate(i % w, i / w, X, Y, scale, N, w, h);
-                    if(!started){
-                        threads[i].start();
-                    }
+    public BufferedImage create() {
+        System.out.println("LOL2");
+        int w = fp.getWidth();
+        int h = fp.getHeight();
+        double X = fp.getFX();
+        double Y = fp.getFY();
+        double scale = fp.getScale();
+        int N = fp.getItr();
+        fg = fp.getGradient();
+        BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+
+        es = Executors.newWorkStealingPool();
+        ArrayList<FractalThread> ls = new ArrayList<>();
+
+        try {
+            int i;
+            for (i = 0; i < w*h; i++) {
+                ls.add(new FractalThread(i, X, Y, scale, N, w, h, bi));
+            }
+            //System.out.println("LOL2.5");
+            es.invokeAll(ls);
+
+            fp.setMatrix(bi);
+            fp.repaint();
+            /*int j = 2;
+            while (i < w * h) {
+                for (; i < th*j; i++) {
+                    ls.get(i - th*(j-1)).setPoint(i);
                 }
-                started = true;
-                System.err.println("123");
-                while (i < w * h) {
-                    for (int j = 0; j < th; j++) {
-                        if (threads[j].isReady()) {
-                            //bi.setRGB(threads[j].getX(), threads[j].getY(), fp.getGradient().getColor(threads[j].getC(), N - 1).getRGB());
-                            bi.setRGB(threads[j].getX(), threads[j].getY(), threads[j].getC());
-                            //fp.repaint();
-                            threads[j].calculate(i % w, i / w,  X, Y, scale, N, w, h);
-                            i++;
-                        }
-                    }
-                    fp.setMatrix(bi);
-                    fp.repaint();
-                }
-                System.err.println("456");
+                //System.out.println("LOL2.5");
+                es.invokeAll(ls);
                 fp.setMatrix(bi);
                 fp.repaint();
-                working = false;
-            }
-            /*try {
-                Thread.sleep(1);
-            } catch (InterruptedException ex) {}*/
+                j++;
+                //System.err.println(":" + j);
+            }*/
+            es.shutdown();
+            es.awaitTermination(1, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(ThreadManager.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        fp.setMatrix(bi);
+        fp.repaint();
+        System.out.println("LOL3");
+        return bi;
     }
 
-    public class FractalThread extends Thread {
+    public class FractalThread implements Callable<Integer> {
 
-        private boolean ready, working;
         private int x, y;
         private int c;
-        
-        private double X, Y, scale;
-        private int N, w, h;
 
-        public FractalThread() {
-            super();
-            ready = true;
-        }
+        //private double X, Y, scale;
+        //private int N, w, h;
+        //private BufferedImage bi;
 
-        public boolean isReady() {
-            return ready;
-        }
-        
-        public int getC(){
-            return c;
-        }
-        
-        public int getX(){
-            return x;
-        }
-        
-        public int getY(){
-            return y;
-        }
+        public FractalThread(int i, double X, double Y,
+                double scale, int N, int w, int h, BufferedImage bi) {
 
-        public void calculate(int x, int y, double X, double Y, 
-                double scale, int N, int w, int h) {
-            this.x = x;
-            this.y = y;
             this.w = w;
             this.h = h;
             this.X = X;
             this.Y = Y;
             this.scale = scale;
             this.N = N;
-            ready = false;
+            this.bi = bi;
+
+            x = i % w;
+            y = i / h;
+            //System.out.println("ready:" + i);
+        }
+        
+        public void setPoint(int i){
+            x = i % w;
+            y = i / h;
         }
 
         public int isIn(double X, double Y) {
@@ -147,28 +151,18 @@ public class ThreadManager implements Runnable {
         }
 
         @Override
-        public void run() {
-            System.out.println("started");
-            while (true) {
-                if (!ready) {
-                    //System.out.println("begin");
-                    /*c = fp.getGradient().getColor(isIn(
+        public Integer call() throws Exception {
+            //System.out.println("begin");
+            /*c = fp.getGradient().getColor(isIn(
                             x / scale - X -w/2/scale, 
                             y / scale - Y -h/2/scale),
                             fp.getItr() - 1).getRGB();*/
-                    
-                    c = isIn(x / scale - X -w/2/scale, 
-                            y / scale - Y -h/2/scale);
-                    c = fg.getColor(c, N - 1).getRGB();
-                    
-                    //working = false;
-                    ready = true;
-                    /*try {
-                        Thread.sleep(1);
-                    } catch (InterruptedException ex) {}*/
-                    //System.out.println("ready: " + x + "; "+ y + ": " + c);
-                }
-            }
+
+            c = isIn(x / scale - X - w / 2 / scale,
+                    y / scale - Y - h / 2 / scale);
+            c = fg.getColor(c, N - 1).getRGB();
+            bi.setRGB(x, y, c);
+            return c;
         }
     }
 }
